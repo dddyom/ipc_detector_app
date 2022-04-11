@@ -1,6 +1,4 @@
 import os
-import json
-import re
 
 
 def is_path_valid(path_to_so):
@@ -37,7 +35,4 @@ def is_port_valid(port_number):
     else:
         return True
 
-
-def to_json(dict):
-    return json.dumps(dict)
 

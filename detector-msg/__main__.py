@@ -39,7 +39,7 @@ def get_args():
 
     arg.add_argument("--stop",
                      dest="stop",
-                     action="store_true",
+                     action='store_true',
                      help="Stop detector")
 
     return arg
@@ -74,6 +74,10 @@ def parse_args(parser):
 
     if args.ip:
         args.ip = str(args.ip)
+    
+    if len(sys.argv) == 2 and args.stop:
+        ipc_client.stop_server()
+        sys.exit(0)
 
     return vars(args)
 
@@ -92,10 +96,10 @@ def main():
     answer = ipc_client.send_message(
         tcp_ip=args['ip'],
         port_number=args['port'],
-        message=utils.to_json(to_detectron)
+        message=to_detectron,
     )
 
-    sys.stdout.write(answer)
+    sys.stdout.write(str(answer))
 
     if args['stop']:
         ipc_client.stop_server()
