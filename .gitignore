@@ -1,4 +1,10 @@
 detector-msg/__pycache__/
 detector/__pycache__/
+<<<<<<< HEAD
+=======
+detector/weights/
+>>>>>>> 082d12d (added detector, created server)
 tags
-
+*.dat
+pyrightconfig.json
+venv/

@@ -77,6 +77,7 @@ def parse_args(parser):
     
     if len(sys.argv) == 2 and args.stop:
         ipc_client.stop_server()
+        print(ipc_client.stop_server())
         sys.exit(0)
 
     return vars(args)
@@ -102,7 +103,7 @@ def main():
     sys.stdout.write(str(answer))
 
     if args['stop']:
-        ipc_client.stop_server()
+        print(ipc_client.stop_server())
 
 
 if __name__ == '__main__':

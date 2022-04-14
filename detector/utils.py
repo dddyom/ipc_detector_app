@@ -7,14 +7,14 @@ def is_port_valid(port_number):
         return True
 
 
-# def is_received_valid(msg):
-    # if isinstance(msg, dict):
-        # for key in msg.keys():
-            # if key not in ('path_to_so', 'azimuth', 'distance'):
-                # print(
-                    # f'Unexpected key in client message {msg}'
-                # )
-    # else:
-        # print(
-            # f'Unexpected client message type {msg}'
-        # )
+def handle_received(received_message):
+    if received_message == 'stop':
+        return 'stop'
+
+    if isinstance(received_message, dict):
+        for key in received_message.keys():
+            if key not in ('path_to_so', 'azimuth', 'distance'):
+                return f'Unexpected key in client message {received_message}'
+                
+    else:
+        return f'Unexpected client message type {received_message}'
