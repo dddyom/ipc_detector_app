@@ -35,7 +35,7 @@ class Detector:
         self.cfg.MODEL.DEVICE = "cpu"
         self.cfg.DATASETS.TRAIN = ("_train",)
         self.cfg.DATASETS.TEST = ("_val",)
-
+        
 
         self.predictor = DefaultPredictor(self.cfg)
 
@@ -49,30 +49,13 @@ class Detector:
         
         if 2 in category_id:
 
-            # viz = Visualizer(image[:,:,::-1],
-                             # metadata=MetadataCatalog.get("_train"),
-            # instance_mode=ColorMode.IMAGE)
-
-            # output = viz.draw_instance_predictions(predictions["instances"].to("cpu"))
             pred_boxes = []
             coordinates = []
-#             print(predictions["instances"])
             for i in range(len(category_id)):
                 if category_id[i] == 2:
-#                     print(predictions["instances"].pred_boxes.tensor.numpy()[i])
                     pred_boxes.append(predictions["instances"].pred_boxes.tensor.numpy()[i])
             for j in pred_boxes:
                 coordinates.append(Detector.BoxCenter(j))
-#             for i in predictions["instances"].pred_boxes.tensor.numpy():
-#                 coordinates.append(Detector.BoxCenter(i))
-
-
-            # plt.imshow(cv2.cvtColor(output.get_image()[...,::-1], cv2.COLOR_BGR2RGB))
-            # plt.axis("off")
-            # plt.tick_params(axis='both', left='off', top='off', right='off', bottom='off', labelleft='off', labeltop='off', labelright='off', labelbottom='off')
-            
-
-            # plt.show()
             return coordinates
     
     @staticmethod 

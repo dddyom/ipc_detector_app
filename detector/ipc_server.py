@@ -1,49 +1,42 @@
-import socket
-import pickle
+
+from settings import logger
+
+logger.info("starting ...")
+logger.info("loading imports...")
 
 
-import utils
-from Detector import Detector
 import detection_tools
-
+from Detector import Detector
+import utils
+import pickle
+import socket
+import os
 
 def run_server(tcp_ip='127.0.0.1', port_number=6000):
+    logger.info('server binding')
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((tcp_ip, port_number))
     server.listen(5)
     # Detector object
+    logger.info("Detector object init...")
     detector = Detector()
     while True:
+        logger.info('Server is ready')
         clientsocket, _ = server.accept()
-
         received_data = pickle.loads(clientsocket.recv(4096))
-
         if received_data == 'stop':
+            logger.info("Stopping server(init by client)")
             break
-
-        msg = pickle.dumps(received_data)
-        clientsocket.send(msg)
 
         answer = utils.handle_received(received_data)
 
         if not answer:
-            # Detector call
-            matrix = detection_tools.dat2nparr(received_data['path_to_so'])
-            splited = detection_tools.split(matrix, 8, 5)
-
-            nulls = detection_tools.null_coordinate(splited, ncols=5)
-
-            detection_tools.splited_save(splited, "./splited_numpy", nulls)
-
-            answer = detection_tools.predict(detector, "./splited_numpy")
-
+            so_buf_name = os.path.basename(received_data['path_to_so']) 
+            path_to_so = f'{settings.DOCKER_PATH}/{so_buf_name}'
+            print(so_buf_name)
+            answer = detection_tools.get_coordinates_from_buffer(
+                detector, received_data['path_to_so'])
             detection_tools.rm_dir('./splited_numpy')
-
-            # print(matrix.shape)
-
-            pass
 
         msg = pickle.dumps(answer)
         clientsocket.send(msg)
-        if answer == 'stop':
-            break

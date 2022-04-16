@@ -1,5 +1,6 @@
 import os
 
+from settings import logger
 
 def is_path_valid(path_to_so):
     if os.path.exists(path_to_so):
@@ -8,11 +9,11 @@ def is_path_valid(path_to_so):
             return True
 
         else:
-            print(
+            logger.error(
                 f'Unexpected extension of file {path_to_so}'
             )
     else:
-        print(
+        logger.error(
             f'File {path_to_so} does not exist'
         )
     return
@@ -20,7 +21,7 @@ def is_path_valid(path_to_so):
 
 def is_coordinate_valid(coordinate):
     if coordinate >= 360 or coordinate < 0:
-        print(
+        logger.error(
             f' Incorrect coordinate value {coordinate}'
         )
     else:
@@ -29,7 +30,7 @@ def is_coordinate_valid(coordinate):
 
 def is_port_valid(port_number):
     if not 0 < port_number < 2**16:
-        print(
+        logger.error(
             f"port numbers must be between 0 and 2**16"
         )
     else:

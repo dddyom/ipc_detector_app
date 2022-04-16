@@ -2,10 +2,10 @@ from argparse import ArgumentParser
 from ipaddress import ip_address
 
 import sys
-
 import utils
 import ipc_server
 
+from settings import logger
 
 def get_args():
     description = "detector - handle so buffer and receive coordinates to detector-msg"
@@ -47,7 +47,13 @@ def parse_args(parser):
         args.ip = str(args.ip)
 
     if len(sys.argv) == 2 and args.start:
-        ipc_server.run_server()
+        try:
+            ipc_server.run_server()
+        except KeyboardInterrupt:
+            logger.info('Stopping server')
+            sys.exit(0)
+        except OSError:
+            logger.error("Address already to use")
         sys.exit(0)
 
     return vars(args)

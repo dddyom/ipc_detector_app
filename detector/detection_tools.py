@@ -4,6 +4,7 @@ import struct
 import os
 import shutil
 
+from settings import logger
 
 def dat2nparr(path_to_so):
     buffer = []
@@ -11,7 +12,8 @@ def dat2nparr(path_to_so):
 
     for i in range(0, len(dat_file), 2):
         buffer.append(struct.unpack("<H", dat_file[i: i + 2]))
-
+    
+    logger.info('convert .dat to numpy matrix...')
     matrix = np.reshape(np.array(buffer), (2048, 1200))
 
     return matrix
@@ -23,6 +25,7 @@ def split(array, nrows, ncols):
 
     splited = np.vsplit(array, nrows)
 
+    logger.info('Splitting matrix...')
     for i in range(len(splited)):
         splited[i] = np.hsplit(splited[i], ncols)
 
@@ -31,6 +34,8 @@ def split(array, nrows, ncols):
 
 def null_coordinate(splited_array, ncols, index=None):
     _, width, height = splited_array.shape
+
+    logger.info('Null coordinates init...')
 
     if index:
 
@@ -59,12 +64,12 @@ def grades_and_kilometers(x, y):
 
     return grades, kilometers
 
-# path = '../SO_201207_153155'
-
 
 def splited_save(splited, path, nulls):
     if not os.path.exists(path):
         os.mkdir(path)
+
+    logger.info('save splited matrix...')
     for i in range(len(splited)):
 
         null_x, null_y = nulls[i]
@@ -77,7 +82,6 @@ def splited_save(splited, path, nulls):
         plt.savefig(f'{path}/{i}_{null_x}_{null_y}.png',
                     dpi=100, bbox_inches='tight', pad_inches=0.0)
 
-#         plt.show()
 
 
 def name_parser(name):
@@ -89,6 +93,7 @@ def name_parser(name):
 def predict(detector, path_to_splited):
     finded = []
     fragments = os.listdir(path_to_splited)
+    logger.info('Prediction starting...')
     for i in fragments:
         local_coordinates = detector.onImage(f"{path_to_splited}/{i}")
 
@@ -97,7 +102,7 @@ def predict(detector, path_to_splited):
             for local_single in local_coordinates:
                 A, D = grades_and_kilometers(
                     A_points + local_single[0], D_points + local_single[1])
-                # print(A, D)
+                logger.info(f'Target found [azimuth = {A}, distance = {D}]')
                 finded.append({
                     'azimuth': A,
                     'distance': D
@@ -105,5 +110,12 @@ def predict(detector, path_to_splited):
     return finded
 
 def rm_dir(path_to_rm):
+    logger.info(f'Remove {path_to_rm}')
     shutil.rmtree(path_to_rm)
-        
+
+def get_coordinates_from_buffer(detector, path_to_so):
+    matrix = dat2nparr(path_to_so)
+    splited =split(matrix, 8, 5)
+    nulls = null_coordinate(splited, ncols=5)
+    splited_save(splited, "./splited_numpy", nulls)
+    return predict(detector, "./splited_numpy")

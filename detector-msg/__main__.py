@@ -7,6 +7,7 @@ import sys
 import utils
 import ipc_client
 
+from settings import logger
 
 def get_args():
     description = "detector-msg - Send arguments to detector"
@@ -76,8 +77,13 @@ def parse_args(parser):
         args.ip = str(args.ip)
     
     if len(sys.argv) == 2 and args.stop:
-        ipc_client.stop_server()
-        print(ipc_client.stop_server())
+        try:
+            ipc_client.stop_server()
+        except ConnectionRefusedError:
+            logger.error('Connection refused. Check port and ip address')
+        except ConnectionResetError:
+            logger.info('Server was stopped')
+
         sys.exit(0)
 
     return vars(args)
@@ -94,17 +100,30 @@ def main():
         # 'azimuth',
         # 'distance',
     )}
-    answer = ipc_client.send_message(
-        tcp_ip=args['ip'],
-        port_number=args['port'],
-        message=to_detectron,
-    )
-
-    sys.stdout.write(str(answer))
+    try:
+        answer = ipc_client.send_message(
+            tcp_ip=args['ip'],
+            port_number=args['port'],
+            message=to_detectron,
+        )
+        sys.stdout.write(str(answer))
+    except ConnectionRefusedError:
+        logger.error('Connection refused. Check port and ip address')
+        sys.exit(1)
+    except KeyboardInterrupt:
+        logger.info('Stop client by user')
+        sys.exit(0)
+    except EOFError:
+        logger.error('Server was stopped, answer not received')
+        sys.exit(1)
 
     if args['stop']:
-        print(ipc_client.stop_server())
-
+        try:
+            ipc_client.stop_server()
+        except ConnectionRefusedError:
+            logger.error('Connection refused. Check port and ip address')
+        except ConnectionResetError:
+            logger.info('Server was stopped')
 
 if __name__ == '__main__':
     main()
