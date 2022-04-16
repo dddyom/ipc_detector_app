@@ -1,4 +1,5 @@
 
+import settings
 from settings import logger
 
 logger.info("starting ...")
@@ -35,7 +36,7 @@ def run_server(tcp_ip='127.0.0.1', port_number=6000):
             path_to_so = f'{settings.DOCKER_PATH}/{so_buf_name}'
             print(so_buf_name)
             answer = detection_tools.get_coordinates_from_buffer(
-                detector, received_data['path_to_so'])
+                detector, path_to_so)
             detection_tools.rm_dir('./splited_numpy')
 
         msg = pickle.dumps(answer)
