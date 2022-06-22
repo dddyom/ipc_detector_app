@@ -10,6 +10,10 @@ import ipc_client
 from settings import logger
 
 def get_args():
+    
+    """
+    Createting client startup arguments
+    """
     description = "detector-msg - Send arguments to detector"
     arg = ArgumentParser(description=description)
 
@@ -47,6 +51,9 @@ def get_args():
 
 
 def parse_args(parser):
+    """
+    Handling input exceptions
+    """
     args = parser.parse_args()
 
     if len(sys.argv) <= 1:

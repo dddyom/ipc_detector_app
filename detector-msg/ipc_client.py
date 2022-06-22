@@ -4,6 +4,9 @@ import pickle
 from settings import logger
 
 def send_message(tcp_ip='127.0.0.1', port_number=6000, message={}):
+    """
+    Sending message to server
+    """
     logger.info(f'sending message: {message}')
     msg = pickle.dumps(message)
 
@@ -16,6 +19,9 @@ def send_message(tcp_ip='127.0.0.1', port_number=6000, message={}):
 
 
 def stop_server(tcp_ip='127.0.0.1', port_number=6000):
+    """
+    Stoping server
+    """
 
     sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((tcp_ip, port_number))
